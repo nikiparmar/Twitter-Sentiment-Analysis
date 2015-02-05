@@ -47,30 +47,37 @@ def train_sentiment(phrase):
 		w = words[0].replace('*','')
 		#print w
 		#print l
-		if w in model:
-			labels[l].append(model[w])
+		if w in model.dictionary:
+			labels[l].append(model.word_vectors[model.dictionary[w]])
 		
 
 def test_sentiment(test_phrase):
 	global keywords
 	for line in test_phrase:
 		line = line.strip()
-		words = line.split()
-		sws = line.lower()
-		flag = False
-		for k in keywords:
-			if k in sws:
-				flag = True
-				break
+		words = line.split("\t")
+		sws = words[0].lower()
+		flag = True
+		#for k in keywords:
+		#	if k in sws:
+		#		flag = True
+		#		break
 		#if any( k in sws for k in keywords ) == False:
 		if flag == True:
 			line_vec = [0]*200
-			for w in words:
-				if w != "AT_USER" or w != "URL":
-					if w in model:
-						line_vec = np.add(line_vec, model[w])
+			for w in words[0].split():
+				#print w
+				if w != "URL":
+					if w in model.dictionary:
+						#print w
+						line_vec = np.add(line_vec, model.word_vectors[model.dictionary[w]])
+					else:
+						w = w.lower()
+						if w in model.dictionary:
+                                                #print w
+                                                	line_vec = np.add(line_vec, model.word_vectors[model.dictionary[w]])
 			l = get_label(line_vec)
-			print line + " " + str(l)
+			print line.replace(",","") + "," + str(l[1]) + "," + str(l[2]) + "," + str(l[3]) + "," + str(l[4]) + "," + str(l[5]) + "," + str(l[6]) + "," + str(l[7]) + "," + str(l[8]) + "," + str(l[9]) + "," + str(l[10]) + "," + str(l[12])
 
 
 def main():
@@ -78,7 +85,7 @@ def main():
     labels = dict()
     phrases = dict()
     result = dict()
-    keywords = ["cleanindia","cleanindiacampaign","mycleanindia","swachhbharatmission","swachbharatmission","cleanupindia","swachbharat","swach bharat","swachh bharat", "clean","swachh"]
+    keywords = ["cleanindia","cleanindiacampaign","mycleanindia","swachhbharatmission","swachbharatmission","cleanupindia","swachbharat","swach bharat","swachh bharat", "clean","swachh", "swatchta", "abhiyaan"]
     print 'Loading the word2vec model'
     training = sys.argv[1]
     model = Glove.load_stanford(training)
